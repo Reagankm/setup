@@ -17,7 +17,7 @@
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (undo-tree nlinum web-mode goto-last-change yasnippet beacon auto-complete ac-js2))))
+    (latex-preview-pane undo-tree nlinum web-mode goto-last-change yasnippet beacon auto-complete ac-js2))))
 
 ;;Changes the appearance so it's pretty!
 (custom-set-faces
@@ -34,6 +34,7 @@
  '(font-lock-string-face ((t (:foreground "SlateBlue1"))))
  '(font-lock-type-face ((t (:foreground "cornflower blue"))))
  '(font-lock-variable-name-face ((t (:foreground "DeepSkyBlue1")))))
+
 
 ;;Set up Recent Files manager
 (require 'recentf)
