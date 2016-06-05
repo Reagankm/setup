@@ -101,7 +101,7 @@
 ;; setup files ending in “.g4” to open in antlr-mode
 (add-to-list 'auto-mode-alist '("\\.g4\\'" . antlr-mode))
 
-;; setup files ending in .php, .html, .js, or .css to open in web-mode
+;; setup files ending in .php, .html, .js, .css, .ejs to open in web-mode
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -116,6 +116,7 @@
 (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
 
 ;;change web indentation to 2 spaces
 (defun my-web-hook ()
