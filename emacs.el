@@ -17,7 +17,9 @@
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (latex-preview-pane undo-tree nlinum web-mode goto-last-change yasnippet beacon auto-complete ac-js2))))
+    (latex-preview-pane undo-tree nlinum web-mode goto-last-change yasnippet beacon auto-complete ac-js2)))
+ '(show-paren-mode t)
+ '(tool-bar-mode nil))
 
 ;;Changes the appearance so it's pretty!
 (custom-set-faces
@@ -46,6 +48,10 @@
 (global-set-key [(control z)] #'undo)
 (global-set-key [(meta g)] #'goto-line)
 (global-set-key [(control x) (control b)] #'ibuffer)
+
+;;Swap ctrl and cmd keys
+(setq mac-command-modifier 'control)
+(setq mac-control-modifier 'meta)
 
 ;;Customizations from Dan-----------------------------------------
 ;;; iswitchb isn't fucking obsolete
@@ -159,7 +165,7 @@
 ;(ac-config-default)
 ;;; set the trigger key so that it can work together with yasnippet on tab key,
 ;;; if the word exists in yasnippet, pressing tab will cause yasnippet to
-;;; activate, otherwise, auto-complete will
+;;; activate, otherwise, auto-complete will 
 ;(ac-set-trigger-key "TAB")
 ;(ac-set-trigger-key "<tab>")
 
