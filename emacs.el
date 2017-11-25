@@ -6,7 +6,11 @@
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+;; Add logcat-adb
+(add-to-list 'load-path "~/.emacs.d/logcat-mode/")
 (package-initialize)
+;; load logcat-adb
+(load "logcat")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -14,11 +18,11 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-	 (quote
-		("060a78f652a7bdbd2cb1895c236117566947889c56d0e1d1947c38403ab638b0" default)))
+   (quote
+    ("060a78f652a7bdbd2cb1895c236117566947889c56d0e1d1947c38403ab638b0" default)))
  '(package-selected-packages
-	 (quote
-		(slime-theme molokai-theme web-mode undo-tree recentf-ext nlinum init-open-recentf goto-last-change))))
+   (quote
+    (exec-path-from-shell ggtags magit slime-theme molokai-theme web-mode undo-tree recentf-ext nlinum init-open-recentf goto-last-change))))
 
 ;;Changes the appearance so it's pretty!
 (custom-set-faces
@@ -26,7 +30,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
  '(default ((t (:inherit nil :stipple nil :background "gray13" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 143 :width normal :foundry "unknown" :family "Monaco"))))
  '(cursor ((t (:background "MediumPurple2"))))
  '(font-lock-comment-face ((t (:foreground "green3"))))
@@ -35,7 +38,7 @@
  '(font-lock-keyword-face ((t (:foreground "deep pink"))))
  '(font-lock-string-face ((t (:foreground "SlateBlue1"))))
  '(font-lock-type-face ((t (:foreground "cornflower blue"))))
-'(font-lock-variable-name-face ((t (:foreground "DeepSkyBlue1")))))
+ '(font-lock-variable-name-face ((t (:foreground "DeepSkyBlue1")))))
 
 ;; Set up Recent Files manager
 (require 'recentf)
@@ -101,7 +104,8 @@
 ;;(electric-indent-mode +1)
 
 (defun my-newline-and-indent-mode-hook ()
-  (local-set-key (kbd "RET") (key-binding (kbd "M-j")))
+  ;;(local-set-key (kbd "RET") (key-binding (kbd "M-j")))
+  (local-set-key (kbd "RET") 'newline-and-indent)
   (local-set-key (kbd "<C-return>") #'electric-indent-just-newline)
 )
 
@@ -220,10 +224,46 @@
 (global-unset-key (kbd "<M-up>"))
 (global-unset-key (kbd "<M-down>"))
 
+;; C-x arrow keys to maneuver between open buffers.
+;; (I'm not logically inconsistent. You're logically inconsistent.)
+(global-set-key (kbd "C-<up>") 'windmove-up)
+(global-set-key (kbd "C-<down>") 'windmove-down)
+(global-set-key (kbd "C-<left>") 'windmove-left)
+(global-set-key (kbd "C-<right>") 'windmove-right)
+
+;; Set forward/backward paragraph to M-n, M-p
+(global-set-key "\M-n" 'forward-paragraph)
+(global-set-key "\M-p" 'backward-paragraph)
+
 ;; Delete trailing whitespace when saving a file
  (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+;; TODO : Figure out how to make this work.  Grump.
+;;
+;;"Auto-saving .emacs: Opening output file: No such file or directory,
+;;/Users/reagan.middlebrook/.emacs.d/backupsUsers/reagan.middlebrook/#!Users!reagan.middlebrook!.emacs#"
+
+;;"Auto-saving notes.txt: Opening output file: No such file or directory,
+;;/Users/reagan.middlebrook/.emacs.d/backupsUsers/reagan.middlebrook/Development/Notes/#!Users!reagan.middlebrook!Development!Notes!notes.txt#"
+
 ;; Save backups in a separate directory
+;; (defvar --backup-directory (concat user-emacs-directory "backups/"))
+;; (if (not (file-exists-p --backup-directory))
+;;     (make-directory --backup-directory t))
+;; (setq backup-directory-alist `(("." . ,--backup-directory)))
+;; (setq auto-save-file-name-transforms `(("." ,--backup-directory t)))
+;; (setq make-backup-files t               ; backup of a file the first time it is saved.
+;;       backup-by-copying t               ; don't clobber symlinks
+;;       version-control t                 ; version numbers for backup files
+;;       delete-old-versions t             ; delete excess backup files silently
+;;       delete-by-moving-to-trash t
+;;       kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+;;       kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+;;       auto-save-default t               ; auto-save every buffer that visits a file
+;;       auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+;;       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+;;       )
+
 ;; (setq
 ;;    backup-by-copying t      ; don't clobber symlinks
 ;;    backup-directory-alist
@@ -233,14 +273,14 @@
 ;;    kept-old-versions 2
 ;;    version-control t)       ; use versioned backups
 
-;; the Google way
-(add-to-list 'backup-directory-alist '("." . "~/.saves") :append)
-(setq backup-by-copying t
-      delete-old-versions t
-      kept-new-versions 6
-      kept-old-versions 2
-      version-control t
-      )
+;; ;; the Google way
+;; (add-to-list 'backup-directory-alist '("." . "~/.saves") :append)
+;; (setq backup-by-copying t
+;;       delete-old-versions t
+;;       kept-new-versions 6
+;;       kept-old-versions 2
+;;       version-control t
+;;       )
 
 ;Have Latex command run pdflatex
 (setq latex-run-command "pdflatex")
@@ -260,11 +300,43 @@
 ;; Enable ediff-trees
 ;;(require 'ediff-trees)
 
-;; Enable subword mode in dart, which makes M-f, M-b work in camelCase, and abbrev-mode, which lets you set custom abbreviations
-(add-hook 'dart-mode-hook 'my-dart-mode-hook)
-(defun my-dart-mode-hook ()
+;; Enable subword mode in dart and Java, which makes M-f, M-b work in camelCase, and abbrev-mode, which lets you set custom abbreviations
+(add-hook 'dart-mode-hook 'my-subword-mode-hook)
+(add-hook 'java-mode-hook 'my-subword-mode-hook)
+(defun my-subword-mode-hook ()
   (subword-mode 1)
   (abbrev-mode 1))
 
 ;; Make C-n add new lines if cursor is at the end of the buffer
 (setq next-line-add-newlines t)
+
+;; Setting up Magit
+(global-set-key (kbd "C-x g") 'magit-status)
+
+;; Show path of current file
+(defun show-file-name ()
+  "Show the full path file name in the minibuffer."
+  (interactive)
+  (message (buffer-file-name))
+  (kill-new (file-truename buffer-file-name))
+  )
+
+(global-set-key "\C-cz" 'show-file-name)
+
+;; Set up GNU Global
+(add-hook 'c-mode-common-hook
+              (lambda ()
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                  (ggtags-mode 1))))
+
+;; Set up exec-path-from-shell, which fixes an OS X problem where Emacs launched
+;; from the GUI gets given a default PATH instead of the one it would have if
+;; launched from the shell
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+;; Echo command characters instantly
+(setq echo-keystrokes .1)
+
+;; Make sure it never uses tabs
+(setq-default indent-tabs-mode nil)
