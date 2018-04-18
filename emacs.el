@@ -20,9 +20,10 @@
  '(custom-safe-themes
    (quote
     ("060a78f652a7bdbd2cb1895c236117566947889c56d0e1d1947c38403ab638b0" default)))
+ '(logcat-default-filters (quote ((! (=~ tag "^AndroidRuntime$")))))
  '(package-selected-packages
    (quote
-    (exec-path-from-shell ggtags magit slime-theme molokai-theme web-mode undo-tree recentf-ext nlinum init-open-recentf goto-last-change))))
+    (typescript-mode go-mode flymd exec-path-from-shell ggtags magit slime-theme molokai-theme web-mode undo-tree recentf-ext nlinum init-open-recentf goto-last-change))))
 
 ;;Changes the appearance so it's pretty!
 (custom-set-faces
@@ -143,6 +144,10 @@
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
+
+;; setup files ending in .ts or .tsx to open in typescript-mode
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 
 ;;change web indentation to 2 spaces
 (defun my-web-hook ()
@@ -340,3 +345,16 @@
 
 ;; Make sure it never uses tabs
 (setq-default indent-tabs-mode nil)
+
+;; Make flymd live updating Markdown open in Firefox cause Chrome is jank
+(defun my-flymd-browser-function (url)
+  (let ((process-environment (browse-url-process-environment)))
+    (apply 'start-process
+           (concat "firefox " url)
+           nil
+           "/usr/bin/open"
+           (list "-a" "firefox" url))))
+(setq flymd-browser-open-function 'my-flymd-browser-function)
+
+;; Force 4 space indentation for XML files
+(setq nxml-child-indent 4 nxml-attribute-indent 4)
