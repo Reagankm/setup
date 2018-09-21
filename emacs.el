@@ -9,6 +9,11 @@
 ;; Add logcat-adb
 (add-to-list 'load-path "~/.emacs.d/logcat-mode/")
 (package-initialize)
+
+;; Fix OS X issues where Emacs can't find the right path
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
 ;; load logcat-adb
 (load "logcat")
 
@@ -23,7 +28,9 @@
  '(logcat-default-filters (quote ((! (=~ tag "^AndroidRuntime$")))))
  '(package-selected-packages
    (quote
-    (typescript-mode go-mode flymd exec-path-from-shell ggtags magit slime-theme molokai-theme web-mode undo-tree recentf-ext nlinum init-open-recentf goto-last-change))))
+    (async column-enforce-mode dash eslint-fix exec-path-from-shell flymd ggtags go-mode goto-last-change init-open-recentf latex-preview-pane magit molokai-theme recentf-ext rjsx-mode slime-theme typescript-mode undo-tree web-mode)))
+ '(preview-orientation (quote below))
+ '(safe-local-variable-values (quote ((bug-reference-bug-regexp . "#\\(?2:[0-9]+\\)")))))
 
 ;;Changes the appearance so it's pretty!
 (custom-set-faces
@@ -37,11 +44,13 @@
  '(font-lock-constant-face ((t (:foreground "cyan3"))))
  '(font-lock-function-name-face ((t (:foreground "SeaGreen1"))))
  '(font-lock-keyword-face ((t (:foreground "deep pink"))))
- '(font-lock-string-face ((t (:foreground "SlateBlue1"))))
+ '(font-lock-string-face ((t (:foreground "light sky blue"))))
  '(font-lock-type-face ((t (:foreground "cornflower blue"))))
- '(font-lock-variable-name-face ((t (:foreground "DeepSkyBlue1")))))
+ '(font-lock-variable-name-face ((t (:foreground "DeepSkyBlue1"))))
+ '(highlight ((t (:background "purple3"))))
+ '(region ((t (:background "LightSkyBlue1")))))
 
-;; Set up Recent Files manager
+;; Set up Recent Files manager---------------------------------------
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
@@ -58,7 +67,7 @@
   (toggle-word-wrap)
   )
 (add-hook 'recentf-dialog-mode-hook 'visible-hook)
-;; End of Recent Files manager set up
+;; End of Recent Files manager set up-------------------------------
 
 ;; Set up custom keys
 (global-set-key [(control z)] #'undo)
@@ -68,6 +77,13 @@
 ;; Swap ctrl and cmd keys
 (setq mac-command-modifier 'control)
 (setq mac-control-modifier 'meta)
+
+;;Require line numbers and column numbers
+(global-linum-mode 1)
+(setq column-number-mode t)
+
+;; Overwrite highlighted text when typing
+(delete-selection-mode 1)
 
 ;; Customizations from Dan-----------------------------------------
 ;;; iswitchb isn't fucking obsolete
@@ -87,11 +103,11 @@
 
 (require 'prog-mode)
 
-;; Added global-linum-mode below so I don't think I need this anymore:
-;; (defun qtmstr-prog-mode-init ()
-;; (nlinum-mode 1))
-
-;; (add-hook 'prog-mode-hook #'qtmstr-prog-mode-init)
+;; Dan's function to open scratch buffer
+(defun switch-to-scratch-buffer ()
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch*")))
+(global-set-key [(control c) ?b] #'switch-to-scratch-buffer)
 ;;End of customizations from Dan---------------------------------
 
 (tool-bar-mode 0) ;;Remove GUI toolbar
@@ -105,7 +121,6 @@
 ;;(electric-indent-mode +1)
 
 (defun my-newline-and-indent-mode-hook ()
-  ;;(local-set-key (kbd "RET") (key-binding (kbd "M-j")))
   (local-set-key (kbd "RET") 'newline-and-indent)
   (local-set-key (kbd "<C-return>") #'electric-indent-just-newline)
 )
@@ -140,7 +155,6 @@
 
 (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.ejs\\'" . web-mode))
@@ -161,44 +175,12 @@
 
 (add-hook 'web-mode-hook 'my-web-hook)
 
-;(add-hook 'web-mode-hook (lambda() (
-;                                    (setq web-mode-markup-indent-offset 2))))
-
-;  (setq web-mode-css-indent-offset 2)
- ; (setq web-mode-code-indent-offset 2)
-  ;(setq web-mode-enable-current-element-highlight t))))
-
-
 ;;Set up javascript
 (add-to-list 'auto-mode-alist '("\\.json$" . js-mode)) ;;open json as js
 (setq js-indent-level 2) ;;set indentation level to 2 spaces
-;(add-hook 'js-mode-hook 'js2-minor-mode) ;;connect js2-mode
-;(add-hook 'js2-mode-hook 'ac-js2-mode) ;;enable autocomplete
-;(setq js2-highlight-level 3) ;;set js2 syntax highlighting level
-;; (0: none, 1: basic, 2: some Ecma built-in props, 3: many Ecma built-in fns)
 
 ;;set all tab widths
 (setq tab-width 2)
-
-;;Set up yasnippet and autocomplete
-;; yasnippet should be load first so they can work together
-;(require 'yasnippet)
-;(yas-global-mode 1)
-;; auto complete mod should be loaded after yasnippet so that they can work together
-;(require 'auto-complete-config)
-;(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-;(ac-config-default)
-;;; set the trigger key so that it can work together with yasnippet on tab key,
-;;; if the word exists in yasnippet, pressing tab will cause yasnippet to
-;;; activate, otherwise, auto-complete will
-;(ac-set-trigger-key "TAB")
-;(ac-set-trigger-key "<tab>")
-
-;; Dan's function to open scratch buffer
-(defun switch-to-scratch-buffer ()
-  (interactive)
-  (switch-to-buffer (get-buffer-create "*scratch*")))
-(global-set-key [(control c) ?b] #'switch-to-scratch-buffer)
 
 ;; Enable undo tree
 (require 'undo-tree)
@@ -209,7 +191,7 @@
 
 ;; Set up goto-last-change
 (require 'goto-last-change)
- (global-set-key "\C-x\C-\\" 'goto-last-change)
+ (global-set-key "\C-x\C-l" 'goto-last-change)
 
 ;; Turn off annoying ding noise
 (setq ring-bell-function 'ignore)
@@ -296,15 +278,6 @@
 ;; Revert buffers with C-M-r
 (global-set-key [134217746] (quote revert-buffer))
 
-;; This was in my other .emacs setup and I don't remember why, so keeping it
-;; around in case I want it later
-;; Return reverse search to C-r
-;;(global-set-key [18] (quote isearch-backward))
-
-;; Something else from an old setup that I may want again
-;; Enable ediff-trees
-;;(require 'ediff-trees)
-
 ;; Enable subword mode in dart and Java, which makes M-f, M-b work in camelCase, and abbrev-mode, which lets you set custom abbreviations
 (add-hook 'dart-mode-hook 'my-subword-mode-hook)
 (add-hook 'java-mode-hook 'my-subword-mode-hook)
@@ -328,7 +301,7 @@
 
 (global-set-key "\C-cz" 'show-file-name)
 
-;; Set up GNU Global
+;; Set up GNU Global for ggtags
 (add-hook 'c-mode-common-hook
               (lambda ()
                 (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
@@ -358,3 +331,34 @@
 
 ;; Force 4 space indentation for XML files
 (setq nxml-child-indent 4 nxml-attribute-indent 4)
+
+;; Set up yafolding to fold jsons
+(defvar yafolding-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "<C-S-return>") #'yafolding-hide-parent-element)
+    (define-key map (kbd "<C-M-return>") #'yafolding-toggle-all)
+    (define-key map (kbd "<C-return>") #'yafolding-toggle-element)
+    map))
+
+(add-hook 'prog-mode-hook
+          (lambda () (yafolding-mode)))
+
+(require 'yafolding)
+(define-key yafolding-mode-map (kbd "<C-S-return>") nil)
+(define-key yafolding-mode-map (kbd "<C-M-return>") nil)
+(define-key yafolding-mode-map (kbd "<C-return>") nil)
+(define-key yafolding-mode-map (kbd "C-c <C-M-return>") 'yafolding-toggle-all)
+(define-key yafolding-mode-map (kbd "C-c <C-S-return>") 'yafolding-hide-parent-element)
+(define-key yafolding-mode-map (kbd "C-c <C-return>") 'yafolding-toggle-element)
+
+;; Use python3 instead of python2
+(setq python-shell-interpreter "python3")
+
+;; Use rjsx-mode to edit JS files
+(add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+;; Auto-format js and jsx files on save
+(eval-after-load 'rjsx-mode
+      '(add-hook 'rjsx-mode-hook (lambda () (add-hook 'after-save-hook 'eslint-fix nil t))))
+
+;; Highlight current line
+(global-hl-line-mode 1)
