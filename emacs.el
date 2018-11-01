@@ -362,3 +362,8 @@
 
 ;; Highlight current line
 (global-hl-line-mode 1)
+
+;; Tell magit the upstream first, but if the value entered is not a valid upstream
+;; (cannot be resolved as an existing revision), then treat it as the name of the
+;; new branch and continue by reading the upstream next.
+(setq magit-branch-read-upstream-first 'fallback)
