@@ -1,2 +1,2 @@
-# .emacs
-A place to save my .emacs file
+# Set Up
+A place to save some basic set up for new machines such as my .emacs and .profile
